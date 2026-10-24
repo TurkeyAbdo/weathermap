@@ -16,18 +16,19 @@ function setup(options = {}) {
   const nodes = new Map(); const requests = []; const saved = new Map(); let removed = 0;
   const get = id => { if (!nodes.has(id)) nodes.set(id, new Node()); return nodes.get(id); };
   const store = { getItem: key => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, value) };
-  const map = { setView() { return this; }, flyTo() {} };
+  let moveend; let popupOpened = 0;
+  const map = { setView() { return this; }, getCenter: () => ({ equals: () => false }), once(event, callback) { moveend = callback; }, flyTo() {} };
   const context = vm.createContext({
     document: { getElementById: get, createElement: () => new Node() },
-    window: { localStorage: store, sessionStorage: store, matchMedia: () => ({ matches: true }) },
+    window: { localStorage: store, sessionStorage: store, matchMedia: () => ({ matches: options.reducedMotion !== false }) },
     navigator: { clipboard: { writeText: async text => { context.copied = text; } } },
-    L: { map: () => map, tileLayer: () => ({ addTo() {} }), divIcon: x => x, marker: () => ({ addTo() { return this; }, bindPopup() { return this; }, openPopup() { return this; }, remove() { removed++; } }) },
+    L: { map: () => map, tileLayer: () => ({ addTo() {} }), divIcon: x => x, marker: () => ({ addTo() { return this; }, bindPopup() { return this; }, openPopup() { popupOpened++; return this; }, remove() { removed++; } }) },
     URL, URLSearchParams, AbortSignal, setTimeout, console,
     fetch: async url => { requests.push(String(url)); return options.fetch ? options.fetch(url) : { ok: true, json: async () => [] }; }
   });
   if (options.noMap) delete context.L;
   vm.runInContext(source, context);
-  return { get, requests, saved, context, removed: () => removed, run: code => vm.runInContext(code, context), click: id => get(id).events.click(), submit: id => get(id).events.submit({ preventDefault() {} }) };
+  return { get, requests, saved, context, finishMove: () => moveend(), popupOpened: () => popupOpened, removed: () => removed, run: code => vm.runInContext(code, context), click: id => get(id).events.click(), submit: id => get(id).events.submit({ preventDefault() {} }) };
 }
 const weather = { main: { temp: 29.4, humidity: 43, feels_like: 30 }, wind: { speed: 3.4 }, clouds: { all: 12 }, weather: [{ icon: '01d', description: 'clear sky' }], dt: 1700000000 };
 test('no-key search guides setup without sending network requests', async () => {
@@ -72,4 +73,8 @@ test('weather details remain usable if map library fails', () => {
 });
 test('invalid keys are rejected without persistence', () => {
   const app = setup(); app.get('api-key').value = 'invalid'; app.submit('key-form'); assert.equal(app.run('state.key'), ''); assert.equal(app.saved.size, 0);
+});
+test('animated map opens popup only after motion ends', () => {
+  const app = setup({ reducedMotion: false }); app.click('demo');
+  assert.equal(app.popupOpened(), 0); app.finishMove(); assert.equal(app.popupOpened(), 1);
 });
