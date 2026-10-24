@@ -90,7 +90,7 @@ function samePlace(a, b) { return Math.abs(a.lat - b.lat) < .001 && Math.abs(a.l
 function isFavorite(place) { return state.favorites.some(p => samePlace(p, place)); }
 function weatherCard(weather) {
   const card = element('div', 'weather-card');
-  card.append(element('div', 'weather-kicker', weather.sample ? 'SAMPLE / NOT LIVE WEATHER' : 'CURRENT CONDITIONS'));
+  card.append(element('div', 'weather-kicker', weather.sample ? 'Sample weather — not live' : 'Current weather'));
   card.append(element('h2', '', weather.place.name));
   const main = element('div', 'weather-main');
   main.append(element('span', 'temperature', `${Math.round(weather.temp)}°C`));
@@ -114,21 +114,20 @@ function weatherCard(weather) {
   const share = element('button', 'primary', 'Share weather ↗'); share.type = 'button';
   share.addEventListener('click', () => shareWeather(weather));
   actions.append(save, share); card.append(actions);
-  card.append(element('p', 'weather-time', weather.sample ? 'Illustrative data for preview only.' : `Observed ${new Date(weather.observed).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}`));
+  card.append(element('p', 'weather-time', weather.sample ? '' : `Observed ${new Date(weather.observed).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}`));
   return card;
 }
 function renderWeather(weather) {
   state.current = weather;
   $('weather-summary').replaceChildren(weatherCard(weather));
-  $('weather-summary').hidden = false;
+  $('weather-summary').hidden = Boolean(state.map);
   const { lat, lon } = weather.place;
-  $('map-coordinates').textContent = `${Math.abs(lat).toFixed(4)}° ${lat >= 0 ? 'N' : 'S'} · ${Math.abs(lon).toFixed(4)}° ${lon >= 0 ? 'E' : 'W'}`;
   if (state.map) {
     if (state.marker) state.marker.remove();
     const icon = L.divIcon({ className: 'weather-pin', html: `${Math.round(weather.temp)}°`, iconSize: [44, 44], iconAnchor: [22, 22] });
     state.marker = L.marker([lat, lon], { icon, title: weather.place.name }).addTo(state.map);
     const marker = state.marker;
-    marker.bindPopup(weatherCard(weather), { maxWidth: 310, autoPan: true });
+    marker.bindPopup(weatherCard(weather), { maxWidth: 350, autoPan: true, maxHeight: 430 });
     if (!reducedMotion && !state.map.getCenter().equals([lat, lon])) {
       state.map.once('moveend', () => { if (state.marker === marker) marker.openPopup(); });
       state.map.flyTo([lat, lon], 10, { animate: true, duration: 1.1 });

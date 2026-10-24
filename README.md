@@ -21,7 +21,7 @@ The key is kept in sessionStorage for the current browser tab, not in source con
 - User-triggered geocoding with Nominatim; multiple results allow precise location selection.
 - Sequential async/await requests: location → coordinates → OpenWeather current weather.
 - Map initialized at Khartoum (15.5007, 32.5599), zoom 6; 70vh map height.
-- Smooth centering, one marker at a time, rich weather popup, and accessible equivalent weather details outside the map.
+- Smooth centering, one marker at a time, rich weather popup, and weather details outside the map if the map library is unavailable.
 - Celsius temperature, humidity, wind in m/s, cloud coverage, weather description and official weather icon.
 - Loading indicator, timeouts and friendly errors for missing keys, unknown places, connection failures, invalid credentials and rate limits.
 - Up to ten favorite places in localStorage, with removal controls.
@@ -46,7 +46,7 @@ Run checks with `node --check app.js` and `node --test tests/app.test.cjs`.
 - Geocoding policy: https://operations.osmfoundation.org/policies/nominatim/
 - Map tiles: https://tile.openstreetmap.org with visible contributor attribution. No bulk downloads or prefetching. Policy: https://operations.osmfoundation.org/policies/tiles/
 - Leaflet: https://leafletjs.com/examples/quick-start/
-- Fonts: Google Fonts DM Sans and Manrope.
+- Fonts: Google Fonts Roboto.
 
 The map library generates its own positioning styles; application HTML contains no inline styles or event handlers. External services and fonts require internet access.
 
