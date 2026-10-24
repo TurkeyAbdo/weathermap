@@ -39,6 +39,8 @@ The key is kept in sessionStorage for the current browser tab, not in source con
 
 Run checks with `node --check app.js` and `node --test tests/app.test.cjs`.
 
+With Node.js 22 or newer, run `npm run validate` for both the syntax check and all 14 application tests. No dependency installation is needed. Tests use mocked services and require no API keys. They also cover malformed geocoding results and clipboard fallback when native sharing fails or is canceled. See CONTRIBUTING.md for the development and browser verification checklist.
+
 ## API and map policies
 
 - Weather: https://openweathermap.org/current — JSON, `units=metric`.
