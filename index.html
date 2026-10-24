@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore current weather, one place at a time. An interactive weather atlas.">
+  <title>WeatherMap — A window to the weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#search">Skip to search</a>
+  <header class="masthead"><a class="brand" href="./" aria-label="WeatherMap home"><span class="brand-symbol" aria-hidden="true">◒</span> WeatherMap<span class="brand-dot">.</span></a><span class="edition">THE EVERYDAY WEATHER ATLAS</span><button id="settings-toggle" class="text-button" aria-expanded="false" aria-controls="settings">API settings <span aria-hidden="true">↗</span></button></header>
+  <main>
+    <section class="intro" aria-labelledby="title"><div><p class="eyebrow">A LITTLE PERSPECTIVE ON YOUR DAY</p><h1 id="title">A window to the weather.</h1><p class="intro-copy">From your corner of the world to somewhere new. Find a place. Feel the forecast.</p></div><div class="intro-seal" aria-hidden="true"><span>↗</span><small>LOOK OUTSIDE<br>GO EXPLORE</small></div></section>
+    <section id="settings" class="settings" aria-labelledby="settings-title" hidden>
+      <div><h2 id="settings-title">Connect your weather data</h2><p>Create a free account at <a href="https://home.openweathermap.org/users/sign_up" target="_blank" rel="noopener noreferrer">OpenWeather</a>, verify your email, then copy a key from <a href="https://home.openweathermap.org/api_keys" target="_blank" rel="noopener noreferrer">My API keys</a>. New keys may take a few hours to activate.</p><p class="small">Your key stays in this browser tab’s session and is sent only to OpenWeather. Frontend API keys are visible to the browser; use a dedicated project key.</p></div>
+      <form id="key-form"><label for="api-key">OpenWeatherMap API key</label><div class="key-row"><input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your API key"><button class="primary" type="submit">Connect</button><button id="clear-key" class="secondary" type="button">Clear</button></div><p id="key-status" class="small" role="status">No key connected. Explore the map or try the sample.</p></form>
+    </section>
+    <section class="workspace" aria-label="Weather explorer">
+      <aside class="sidebar">
+        <p class="eyebrow">01 / FIND YOUR PLACE</p><h2>Where to?</h2><p class="muted">Search a city, an address, or a place you love.</p>
+        <form id="search-form"><label for="search">Location</label><div class="search-input"><span aria-hidden="true">⌕</span><input id="search" name="location" placeholder="Try Port Sudan" maxlength="180" required autocomplete="off"></div><button id="search-button" class="primary search-button" type="submit"><span>Get Weather</span><span aria-hidden="true">↗</span></button></form>
+        <button id="locate" class="text-button locate" type="button">◎ Use my location</button>
+        <div id="status" class="notice" role="status" aria-live="polite"><span id="spinner" class="spinner" hidden></span><span id="status-text">Your next discovery starts with a place.</span></div>
+        <section id="results" aria-label="Matching places" hidden><h3>Choose a place</h3><div id="result-list"></div></section>
+        <div class="saved"><div class="section-label"><h3>YOUR PLACES</h3><span id="favorite-count">0 SAVED</span></div><div id="favorites"></div><p id="favorites-empty" class="small muted">Keep a place close. Save it after checking its weather.</p></div>
+        <div class="sample"><p class="eyebrow">TAKE A LOOK AROUND</p><p>No API key yet? Preview the experience with a clearly labeled sample.</p><button id="demo" class="secondary" type="button">Explore sample weather <span aria-hidden="true">→</span></button></div>
+      </aside>
+      <div class="map-column"><div class="map-heading"><span><span class="live-dot"></span> THE WORLD, AT A GLANCE</span><span id="map-coordinates">15.5007° N · 32.5599° E</span></div><div class="map-frame"><div id="map" role="region" aria-label="Interactive weather map"></div><div id="map-fallback" hidden>Map could not load. Check your connection and refresh. Weather results will still appear below.</div></div><div class="map-caption"><span>Drag to wander. Search to discover.</span><span>MAP / OPENSTREETMAP</span></div><section id="weather-summary" aria-live="polite" aria-label="Current weather details" hidden></section></div>
+    </section>
+    <footer><span>WeatherMap <span class="brand-dot">/</span> Made for a world worth exploring.</span><span>Weather by <a href="https://openweathermap.org/" target="_blank" rel="noopener noreferrer">OpenWeather</a> · Maps © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a></span></footer>
+  </main>
+</body>
+</html>
