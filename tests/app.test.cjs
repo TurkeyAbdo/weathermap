@@ -83,3 +83,14 @@ test('malformed geocoding entries are ignored without breaking valid results', a
   const places = await app.run("geocode('Khartoum')");
   assert.equal(places.length, 1); assert.equal(places[0].name, 'Khartoum');
 });
+test('blocked native sharing falls back to copying weather', async () => {
+  const app = setup(); app.click('demo');
+  app.context.navigator.share = async () => { throw new Error('Not supported'); };
+  await app.run('shareWeather(state.current)');
+  assert.match(app.context.copied, /Khartoum/); assert.match(app.get('status-text').textContent, /copied/);
+});
+test('canceling native sharing does not overwrite the clipboard', async () => {
+  const app = setup(); app.click('demo');
+  app.context.navigator.share = async () => { const error = new Error('Canceled'); error.name = 'AbortError'; throw error; };
+  await app.run('shareWeather(state.current)'); assert.equal(app.context.copied, undefined);
+});

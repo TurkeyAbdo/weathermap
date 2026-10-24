@@ -170,8 +170,11 @@ async function shareWeather(weather) {
   const prefix = weather.sample ? '[Sample weather — not live] ' : '';
   const text = `${prefix}${weather.place.name}: ${Math.round(weather.temp)}°C, ${weather.description}. Humidity ${weather.humidity}%, wind ${weather.wind.toFixed(1)} m/s, clouds ${weather.clouds}%. Via WeatherMap.`;
   try {
-    if (navigator.share) { await navigator.share({ title: 'WeatherMap', text }); status('Weather shared.'); }
-    else if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(text); status('Weather copied. Paste it into your favorite app.'); }
+    if (navigator.share) {
+      try { await navigator.share({ title: 'WeatherMap', text }); status('Weather shared.'); return; }
+      catch (error) { if (error.name === 'AbortError') return; }
+    }
+    if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(text); status('Weather copied. Paste it into your favorite app.'); }
     else { status('Sharing is unavailable here. Open this page over HTTPS or localhost.', true); }
   } catch (error) { if (error.name !== 'AbortError') status('Could not share weather. Please check browser permissions.', true); }
 }
