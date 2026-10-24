@@ -58,9 +58,9 @@ The map library generates its own positioning styles; application HTML contains 
 4. Once published, put the actual live URL and repository URL below.
 5. Review and understand the code before submitting. Follow your course's rules on assistance and attribution. Keep meaningful commits as you develop and revise your work; do not fabricate commit history.
 
-Repository URL: pending publication.
+Repository URL: https://github.com/TurkeyAbdo/weathermap
 
-Live demo URL: pending GitHub Pages publication.
+Live demo URL: https://turkeyabdo.github.io/weathermap/
 
 ## Manual acceptance checks
 

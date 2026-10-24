@@ -6,7 +6,7 @@ const storage = {
   set(store, key, value) { try { window[store].setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
 };
 const state = {
-  key: storage.get('sessionStorage', 'weath map.key', ''),
+  key: storage.get('sessionStorage', 'weathermap.key', ''),
   favorites: storage.get('localStorage', 'weathermap.favorites', []),
   map: null, marker: null, current: null, busy: false, lastSearch: 0, cache: new Map()
 };
@@ -127,8 +127,15 @@ function renderWeather(weather) {
     if (state.marker) state.marker.remove();
     const icon = L.divIcon({ className: 'weather-pin', html: `${Math.round(weather.temp)}°`, iconSize: [44, 44], iconAnchor: [22, 22] });
     state.marker = L.marker([lat, lon], { icon, title: weather.place.name }).addTo(state.map);
-    state.marker.bindPopup(weatherCard(weather), { maxWidth: 310, autoPan: true }).openPopup();
-    state.map.flyTo([lat, lon], 10, { animate: !reducedMotion, duration: 1.1 });
+    const marker = state.marker;
+    marker.bindPopup(weatherCard(weather), { maxWidth: 310, autoPan: true });
+    if (!reducedMotion && !state.map.getCenter().equals([lat, lon])) {
+      state.map.once('moveend', () => { if (state.marker === marker) marker.openPopup(); });
+      state.map.flyTo([lat, lon], 10, { animate: true, duration: 1.1 });
+    } else {
+      state.map.setView([lat, lon], 10, { animate: false });
+      marker.openPopup();
+    }
   }
 }
 function persistFavorites() {
@@ -192,12 +199,12 @@ $('key-form').addEventListener('submit', event => {
   const key = $('api-key').value.trim();
   if (!/^[a-f\d]{32}$/i.test(key)) { $('key-status').textContent = 'Enter the 32-character API key from your OpenWeather account.'; return; }
   state.key = key;
-  const saved = storage.set('sessionStorage', 'weath map.key', key);
+  const saved = storage.set('sessionStorage', 'weathermap.key', key);
   $('api-key').value = ''; keyStatus();
   if (!saved) $('key-status').textContent = 'Key connected for this page only. Browser session storage is unavailable.';
   status('Connected. Search for a place to get live weather.');
 });
-$('clear-key').addEventListener('click', () => { state.key = ''; storage.set('sessionStorage', 'weath map.key', ''); $('api-key').value = ''; keyStatus(); status('API key cleared.'); });
+$('clear-key').addEventListener('click', () => { state.key = ''; storage.set('sessionStorage', 'weathermap.key', ''); $('api-key').value = ''; keyStatus(); status('API key cleared.'); });
 $('demo').addEventListener('click', () => {
   renderWeather({ place: { name: 'Khartoum', label: 'Khartoum, Sudan', lat: 15.5007, lon: 32.5599 }, temp: 33, feels: 32, humidity: 22, wind: 4.1, clouds: 8, description: 'clear sky', icon: '01d', observed: 0, sample: true });
   status('You are viewing sample data, not current weather. Connect an API key for live results.');
