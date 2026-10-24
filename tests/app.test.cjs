@@ -78,3 +78,8 @@ test('animated map opens popup only after motion ends', () => {
   const app = setup({ reducedMotion: false }); app.click('demo');
   assert.equal(app.popupOpened(), 0); app.finishMove(); assert.equal(app.popupOpened(), 1);
 });
+test('malformed geocoding entries are ignored without breaking valid results', async () => {
+  const app = setup({ fetch: async () => ({ ok: true, json: async () => [null, {}, { display_name: 'Invalid', lat: 100, lon: 0 }, { display_name: 'Blank', lat: '', lon: '' }, { display_name: 'Khartoum, Sudan', lat: '15.5', lon: '32.5' }] }) });
+  const places = await app.run("geocode('Khartoum')");
+  assert.equal(places.length, 1); assert.equal(places[0].name, 'Khartoum');
+});

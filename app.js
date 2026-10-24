@@ -53,7 +53,9 @@ async function geocode(query) {
   url.search = new URLSearchParams({ q: query, format: 'jsonv2', limit: '5', addressdetails: '1' });
   const data = await fetchJSON(url);
   if (!Array.isArray(data)) throw new Error('The location service returned an unexpected response.');
-  const places = data.map(p => ({ name: p.name || p.display_name.split(',')[0], label: p.display_name, lat: Number(p.lat), lon: Number(p.lon) })).filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon));
+  const places = data.filter(p => p && typeof p.display_name === 'string' && p.display_name.trim() && p.lat != null && p.lon != null && String(p.lat).trim() && String(p.lon).trim())
+    .map(p => ({ name: typeof p.name === 'string' && p.name.trim() ? p.name : p.display_name.split(',')[0], label: p.display_name, lat: Number(p.lat), lon: Number(p.lon) }))
+    .filter(p => Number.isFinite(p.lat) && Math.abs(p.lat) <= 90 && Number.isFinite(p.lon) && Math.abs(p.lon) <= 180);
   if (!places.length) throw new Error('No place found. Try adding a country, or check the spelling.');
   state.cache.set(query.toLowerCase(), places);
   return places;
