@@ -221,4 +221,4 @@ if (typeof L !== 'undefined') {
   state.map = L.map('map', { scrollWheelZoom: false }).setView([15.5007, 32.5599], 6);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(state.map);
 } else { $('map-fallback').hidden = false; status('Map library did not load. Check your connection. You can still view weather details below.', true); }
-keyStatus(); renderFavorites(); settings(!state.key);
+keyStatus(); renderFavorites(); settings(false);
